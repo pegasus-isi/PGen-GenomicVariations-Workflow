@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if [ ! -d software ]; then
+    tar xzf software.tar.gz
+fi
+
+if [ "x$TMPDIR_OVERRIDE" != "x" ]; then
+   export TMPDIR="$TMPDIR_OVERRIDE"
+fi
+if [ "x$TMPDIR" = "x" ]; then
+   export TMPDIR=/tmp
+fi
+if [ ! -e "$TMPDIR" ]; then
+    mkdir -p $TMPDIR
+fi
+
+OUTFILE=`mktemp -t gatk-output.XXXXXXXXXX` || exit 1
+
+# memory depends on what subsystem we call
+OPTIONS="-Xmx7g -XX:+UseSerialGC"
+if (echo "'$@'" | grep -i "HaplotypeCaller") >/dev/null; then
+    OPTIONS="-Xmx2g -XX:+UseSerialGC"
+elif (echo "'$@'" | grep -i "CombineGVCFs") >/dev/null; then
+    OPTIONS="-Xmx17g -XX:+UseSerialGC"
+fi
+OPTIONS="-Djava.io.tmpdir=$TMPDIR $OPTIONS"
+
+java $OPTIONS \
+     -jar ./software/GenomeAnalysisTK-3.0.0/GenomeAnalysisTK.jar \
+     "$@" \
+     >$OUTFILE 2>&1
+EXITCODE=$?
+
+if [ "x$EXITCODE" != "x0" ]; then
+    # RealignerTargetCreator might need a second pass with different options 
+    if (cat $OUTFILE | grep -E "extremely high quality score|wrong encoding") >/dev/null 2>&1; then
+        cat $OUTFILE
+        echo
+        echo "Rerunning with --fix_misencoded_quality_scores..."
+        java $OPTIONS \
+             -jar ./software/GenomeAnalysisTK-3.0.0/GenomeAnalysisTK.jar \
+             "$@" \
+             --fix_misencoded_quality_scores \
+             >$OUTFILE 2>&1
+        EXITCODE=$?
+    fi
+fi
+
+cat $OUTFILE
+rm -f $OUTFILE
+exit $EXITCODE
+

@@ -1,0 +1,2 @@
+irods:///iplant/home/shared/digbio/test_pipeline/SRR1209394.fastq.gz
+
