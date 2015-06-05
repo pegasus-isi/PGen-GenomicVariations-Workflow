@@ -788,7 +788,7 @@ def generate_dax():
     
     logger.info("Generating abstract workflow (DAX)")
     
-    dax = AutoADAG("soykb")
+    dax = AutoADAG("ngs-genomicvariations")
     
     # The key to adding jobs to this workflow is the AutoADAG - it allows you
     # to add jobs with listed input and output files, and then the AutoADAG
@@ -899,7 +899,7 @@ def generate_dax():
     combine_variants(dax, software_tar, chromosomes, ref_files, tracked_files)
  
     # write out the dax
-    dax_file = open(conf.get("local", "work_dir") + "/soykb.dax", "w")
+    dax_file = open(conf.get("local", "work_dir") + "/ngs-genomicvariations.dax", "w")
     dax.writeXML(dax_file)
     dax_file.close()
 
@@ -924,7 +924,7 @@ def main():
 
     # read the config file and add those settings to the option object
     conf = ConfigParser.SafeConfigParser({'username': getpass.getuser()})
-    r = conf.read([os.environ['HOME'] + "/.soybean-workflow.conf", \
+    r = conf.read([os.environ['HOME'] + "/.ngs-workflow.conf", \
                   "conf/main.conf", \
                   "conf/%s/site.conf" % options.exec_env])
     if len(r) != 3:
@@ -956,7 +956,8 @@ def main():
     conf.set("local", "pegasus_bin", pegasus_bin_dir)
 
     # check proxy before doing anything else
-    proxy_check()
+    if (options.exec_env != "distributed"):
+        proxy_check()
     
     # create a local work directory for the workflow
     logger.info("Setting up work directory at %s" \
@@ -966,10 +967,10 @@ def main():
         os.exit(1)
     os.makedirs(conf.get("local", "work_dir"))
 
-    # tar up the software
-    logger.info("Tarring up software directory to send with jobs")
-    myexec("tar czf " + conf.get("local", "work_dir") + \
-           "/software.tar.gz software")
+    # download the  software tarball
+    logger.info("Downloading the software tarball")
+    myexec("wget -O " + conf.get("local", "work_dir") + "/software.tar.gz" + \
+           " http://www.isi.edu/~rynge/NGS-GenomicVariations-Workflow/software-1.0.tar.gz")
 
     generate_site_catalog()
 
@@ -1002,7 +1003,7 @@ def main():
     if conf.get("exec_environment", "job_clustering") != "":
         cmd += " --cluster " + conf.get("exec_environment", "job_clustering")
           
-    cmd += " --dax soykb.dax"
+    cmd += " --dax ngs-genomicvariations.dax"
     logger.info(cmd)
     myexec(cmd + " 2>&1 | tee pegasus-plan.out")
 

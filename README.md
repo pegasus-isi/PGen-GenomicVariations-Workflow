@@ -1,29 +1,27 @@
 NGS-GenomicVariations-Workflow
 ==============================
 
-Note that the Git repository does not include the software required for
-the jobs. For now, grab the software tarball from
-http://www.isi.edu/~rynge/NGS-GenomicVariations-Workflow/software.tar.gz .
-Untar it in the top level directory.
-
 The workflow is controlled by several configuration files:
 
-inputs-ref.txt - should contain only one URL, and that would be
+*inputs-ref.txt* - should contain only one URL, and that would be
 for the reference genome to use.
 
-chromosomes.txt - a list of chromsomes to process. This should
+*chromosomes.txt* - a list of chromsomes to process. This should
 be the same format as the reference genome. One way to generate
 this list is:
-   cat reference.fa | grep '^>' | grep -v -i scaffold
 
-inputs-fastq.txt - a list of URLs for the fastq files to process.
+```
+cat reference.fa | grep '^>' | grep -v -i scaffold
+```
+
+*inputs-fastq.txt* - a list of URLs for the fastq files to process.
 Depending on the settings in conf/main.conf, the list can be either
 single-end or pair-end. In either case, put one URL on each line.
 
-conf/main.conf - this one contains general properties such as input
+*conf/main.conf* - this one contains general properties such as input
 formats and filters.
 
-~/.soybean-workflow.conf - Create the file with this content:
+*~/.ngs-workflow.conf* - Create the file with this content:
 
 ```
 # local refers to the submit host. Specify paths to a directory
@@ -51,8 +49,12 @@ allocation = TG-ABC1234
 username = rynge
 
 storage_group = 00384
-
 ```
+
+## Credentials
+
+You might need a combination of credentials based on where you are
+running the workflow and where input/output data is staged from/to.
 
 Basic files are pulled from the submit host with scp. This is to keep
 the requirements on the submit host light, and make it easy to run the
@@ -79,11 +81,20 @@ irodsZone iplant
 irodspassword 'YOUR_IRODS_PASSWORD'
 ```
 
-To run on TACC, you need a X509 proxy. Create one with:
+If you want to run the workflow at TACC, you need a X509 proxy. Create
+one with (this needs to be done before each workflow run):
 
     myproxy-logon -s myproxy.xsede.org -t 144:00 -l YOUR_XSEDE_USERNAME
 
-To generate the workflow:
+
+## Starting the workflow
+
+To generate the workflow for execution in HTCondor pool:
+
+    ./workflow-generator --exec-env distributed
+
+to run on TACC (and don't forget to renew your X509 proxy):
 
     ./workflow-generator --exec-env tacc-stampede
+
 
