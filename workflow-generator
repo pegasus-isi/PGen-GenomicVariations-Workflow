@@ -210,7 +210,7 @@ def read_input_lists(ref_urls, chromosomes, fastq_urls):
     if len(fastq_urls) == 0:
         logger.error("Did not find fastq files")
         sys.exit(1)
-    if conf.get("main", "inputs-style") == "double-end" and len(fastq_urls) % 2 != 0:
+    if conf.get("main", "inputs-style") == "pair-end" and len(fastq_urls) % 2 != 0:
         logger.error("Found an uneven number of fastq files in input list")
         sys.exit(1)
 
@@ -660,15 +660,22 @@ def merge_gvcf(dax, software_file, chromosomes, ref_files, tracked_files, sample
     
     # inputs
     files = []
-    j.uses(software_file, link=Link.INPUT)
-    for f in ref_files:
-        j.uses(f, link=Link.INPUT)
-    for s in sample_names:
-        for chr in chromosomes:
-            fname = "%s-%s_%s.vcf" % (conf.get("local", "run_id"), s, chr)
-            j.uses(tracked_files[fname + ".idx"], link=Link.INPUT)
-            j.uses(tracked_files[fname], link=Link.INPUT)
-            files.append(fname)
+    try:
+        j.uses(software_file, link=Link.INPUT)
+        for f in ref_files:
+            j.uses(f, link=Link.INPUT)
+        for s in sample_names:
+            for chr in chromosomes:
+                fname = "%s-%s_%s.vcf" % (conf.get("local", "run_id"), s, chr)
+                j.uses(tracked_files[fname + ".idx"], link=Link.INPUT)
+                j.uses(tracked_files[fname], link=Link.INPUT)
+                files.append(fname)
+    except DuplicateError, e:
+        logger.fatal("Duplicate file entries detected. You either have duplicates of the inputs files" + \
+                     " in inputs-fastq.txt or are configured for single-end even though the inputs are" + \
+                     " pair-end (conf/main.conf)")
+        sys.exit(1)
+
 
     # create filelist to minimize the length of the command line
     fd = open(conf.get("local", "work_dir") + "/haplotype-files.list", "w")
@@ -932,9 +939,9 @@ def main():
         sys.exit(1)
 
     if conf.get("main", "inputs-style") != "single-end" and \
-       conf.get("main", "inputs-style") != "double-end":
+       conf.get("main", "inputs-style") != "pair-end":
         logger.fatal("Valid choicses for the main/inputs-style configuration is" + \
-                     " single-end or double-end")
+                     " single-end or pair-end")
         sys.exit(1)
 
     conf.set("local", "username", getpass.getuser())
@@ -969,7 +976,7 @@ def main():
 
     # download the  software tarball
     logger.info("Downloading the software tarball")
-    myexec("wget -O " + conf.get("local", "work_dir") + "/software.tar.gz" + \
+    myexec("wget -nv -O " + conf.get("local", "work_dir") + "/software.tar.gz" + \
            " http://www.isi.edu/~rynge/NGS-GenomicVariations-Workflow/software-1.0.tar.gz")
 
     generate_site_catalog()
