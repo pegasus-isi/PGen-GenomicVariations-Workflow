@@ -92,7 +92,7 @@ This input file saves the list of chromosomes for alignment and snp calling; use
 zcat reference.fa.gz | grep “>”  > chromosome.txt 
 ```
 
-## Outputs of workflow:**
+## Outputs of workflow:
 
 Workflow generates bam, vcf and mergeGVCF output files. mergeGVCF can be used for future merge if needed. All outputs will be automatically transferred to iPlant data store during the workflow process named after workflow submission date.
 For example if we have ‘SRR1209394.fastq.gz’as the input, workflow will generate below files as the outputs.
@@ -112,7 +112,7 @@ Submission_date-mergeGVCF.vcf
 Submission_date-mergeGVCF.vcf.idx
 ```
 
-## SNP Filtration Criteria**
+## SNP Filtration Criteria
 
 Default filtration for snps and indels:
 
@@ -148,8 +148,10 @@ irodspassword ‘YOUR_IRODS_PASSWORD’
 ```
 
 To change permission run the command as below:
-# chmod 0600 irods.iplant.env
 
+```
+$ chmod 0600 irods.iplant.env
+```
 
 ## Running the workflow for execution in HTCondor pool:
 
