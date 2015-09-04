@@ -795,7 +795,7 @@ def generate_dax():
     
     logger.info("Generating abstract workflow (DAX)")
     
-    dax = AutoADAG("ngs-genomicvariations")
+    dax = AutoADAG("pgen-genomicvariations")
     
     # The key to adding jobs to this workflow is the AutoADAG - it allows you
     # to add jobs with listed input and output files, and then the AutoADAG
@@ -906,7 +906,7 @@ def generate_dax():
     combine_variants(dax, software_tar, chromosomes, ref_files, tracked_files)
  
     # write out the dax
-    dax_file = open(conf.get("local", "work_dir") + "/ngs-genomicvariations.dax", "w")
+    dax_file = open(conf.get("local", "work_dir") + "/pgen-genomicvariations.dax", "w")
     dax.writeXML(dax_file)
     dax_file.close()
 
@@ -931,7 +931,7 @@ def main():
 
     # read the config file and add those settings to the option object
     conf = ConfigParser.SafeConfigParser({'username': getpass.getuser()})
-    r = conf.read([os.environ['HOME'] + "/.ngs-workflow.conf", \
+    r = conf.read([os.environ['HOME'] + "/.pgen-workflow.conf", \
                   "conf/main.conf", \
                   "conf/%s/site.conf" % options.exec_env])
     if len(r) != 3:
@@ -977,7 +977,7 @@ def main():
     # download the  software tarball
     logger.info("Downloading the software tarball")
     myexec("wget -nv -O " + conf.get("local", "work_dir") + "/software.tar.gz" + \
-           " http://www.isi.edu/~rynge/NGS-GenomicVariations-Workflow/software-1.0.tar.gz")
+           " http://www.isi.edu/~rynge/PGen-GenomicVariations-Workflow/software-1.0.tar.gz")
 
     generate_site_catalog()
 
@@ -1010,7 +1010,7 @@ def main():
     if conf.get("exec_environment", "job_clustering") != "":
         cmd += " --cluster " + conf.get("exec_environment", "job_clustering")
           
-    cmd += " --dax ngs-genomicvariations.dax"
+    cmd += " --dax pgen-genomicvariations.dax"
     logger.info(cmd)
     myexec(cmd + " 2>&1 | tee pegasus-plan.out")
 

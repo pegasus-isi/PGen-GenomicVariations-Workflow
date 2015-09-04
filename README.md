@@ -21,15 +21,7 @@ Download Pegasus workflow from Github: The workflow is hosted on Github (https:/
 $ git clone https://hithub.com/Pegasus-sis/NGS-GenomicVariations-Workflow.git
 ```
 
-Note that the Git repository does not include the software required for the jobs. Grab the software tarball from http://www.isi.edu/~rynge/soybean/software.tar.gz and untar it in the top level workflow directory as below. 
-
-```
-$ cd ~/PGen-GenomicVariations-Workflow
-$ wget http://www.isi.edu/~rynge/soybean/software.tar.gz
-$ tar xzf software.tar.gz
-```
-
-The workflow is controlled by a configuration file named ~/.ngs-workflow.conf
+The workflow is controlled by a configuration file named ~/.pgen-workflow.conf
 Create the file with content as below:
 
 ```
