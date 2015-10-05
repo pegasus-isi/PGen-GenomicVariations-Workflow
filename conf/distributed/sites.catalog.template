@@ -19,8 +19,8 @@
         <profile namespace="env" key="TMPDIR_OVERRIDE">/tmp</profile>
     </site>
     <site  handle="irods_iplant" arch="x86_64" os="LINUX">
-        <directory type="local-storage" path="/iplant/home/shared/digbio/Pegasus_GATK_Results/Output_DIR/$username">
-            <file-server operation="all" url="irods:///iplant/home/shared/digbio/Pegasus_GATK_Results/Output_DIR/$username" />
+        <directory type="local-storage" path="/iplant/home/revieweraccess/PGen-outputs">
+            <file-server operation="all" url="irods:///iplant/home/revieweraccess/PGen-outputs" />
         </directory>
         <profile namespace="pegasus" key="irodsEnvFile" >$home/irods.iplant.env</profile>
     </site>
