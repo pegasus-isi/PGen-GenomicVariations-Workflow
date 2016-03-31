@@ -1,2 +1,1 @@
-irods:///iplant/home/shared/digbio/test_pipeline/SRR1209394.fastq.gz
-
+irods:///iplant/home/shared/digbio/SoyKB/NGS_workflow/SRR1209394.fastq.gz

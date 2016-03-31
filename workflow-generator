@@ -954,6 +954,12 @@ def main():
     # add the run id to the work dir
     conf.set("local", "work_dir", conf.get("local", "work_dir") + "/" + 
                                   conf.get("local", "run_id"))
+
+    try:
+        if conf.get("exec_environment", "requires_x509_proxy") is None:
+            conf.set("exec_environment", "requires_x509_proxy", "True")
+    except:
+        conf.set("exec_environment", "requires_x509_proxy", "True")
     
     # local Pegasus environment
     pegasus_config = os.path.join("pegasus-config") + " --noeoln --bin"
@@ -963,7 +969,7 @@ def main():
     conf.set("local", "pegasus_bin", pegasus_bin_dir)
 
     # check proxy before doing anything else
-    if (options.exec_env != "distributed"):
+    if conf.getboolean("exec_environment", "requires_x509_proxy") == True:
         proxy_check()
     
     # create a local work directory for the workflow

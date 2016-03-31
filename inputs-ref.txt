@@ -1,2 +1,1 @@
-irods:///iplant/home/shared/digbio/test_pipeline/Zmays_284_AGPv3.gz
-
+irods:///iplant/home/shared/digbio/SoyKB/NGS_workflow/Zmays_284_AGPv3.gz
