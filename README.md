@@ -18,7 +18,7 @@ $ ssh username@workflow.isi.edu
 Download Pegasus workflow from Github: The workflow is hosted on Github (https://github.com/pegasus-isi/PGen-GenomicVariations-Workflow). Log in and check out a version of the workflow in your home directory. Clone the repository to get a local copy as below:
 
 ```
-$ git clone https://hithub.com/Pegasus-sis/NGS-GenomicVariations-Workflow.git
+$ git clone https://github.com/pegasus-isi/PGen-GenomicVariations-Workflow.git
 ```
 
 The workflow is controlled by a configuration file named ~/.pgen-workflow.conf
@@ -128,7 +128,7 @@ $ ssh-keygen -t rsa -b 2048 -f ~/.ssh/workflow
 $ cat ~/.ssh/workflow.pub >>~/.ssh/authorized_keys
 ```
 
-To access data from the iPlant iRods repository, you need a file in your home directory named ~/irods.iplant.env, with 0600 permission and content as below:
+To access data from the iPlant iRods repository, you need a file in your home directory. The name and format of this file depends on if you are using a system with iRods version 3 or version 4. For version 3, you need a file named ~/irods.iplant.env, with 0600 permission and content as below:
 
 ```
 irodsHost data.iplantcollaborative.org
@@ -143,6 +143,24 @@ To change permission run the command as below:
 
 ```
 $ chmod 0600 irods.iplant.env
+```
+
+For version 4, you need a file named ~/irods.iplant.json, with 0600 permission and content as below:
+
+```
+{
+    "irods_host": "data.iplantcollaborative.org",
+    "irods_port": 1247,
+    "irods_user_name": "YOUR_IRODS_USERNAME",
+    "irods_zone_name": "iplant",
+    "irodspassword": "YOUR_IRODS_PASSWORD"
+}
+```
+
+To change permission run the command as below:
+
+```
+$ chmod 0600 irods.iplant.json
 ```
 
 ## Running the workflow for execution in HTCondor pool:
