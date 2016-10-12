@@ -31,6 +31,10 @@ Create the file with content as below:
 [local]
 work_dir = /local-scratch/%(username)s/pgen
 irods_bin = /ccg/software/irods/3.2/bin
+
+[cyverse]
+username = your_cyverse_username
+
 # tacc refers to configuration for the TACC Stampede
 # supercomputer. To use this machine, you need an allocation
 # (start with TG-) and you also need to know your username

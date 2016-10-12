@@ -165,6 +165,7 @@ def generate_site_catalog():
                         work_dir = conf.get("local", "work_dir"),
                         pegasus_bin = conf.get("local", "pegasus_bin"),
                         irods_bin = conf.get("local", "irods_bin"),
+                        cyverse_username = conf.get("cyverse", "username"),
                         tacc_allocation = conf.get("tacc", "allocation"),
                         tacc_username = conf.get("tacc", "username"),
                         tacc_storage_group = conf.get("tacc", "storage_group"),
@@ -445,8 +446,8 @@ def add_replace(sample_name, dax, software_tar, chromosomes, ref_files, tracked_
     j.uses(software_tar, link=Link.INPUT)
     j.uses(tracked_files['deduped_reads'], link=Link.INPUT)
     j.uses(tracked_files['deduped_index'], link=Link.INPUT)
-    j.uses(tracked_files['addrepl_reads'], link=Link.OUTPUT, transfer=True)
-    j.uses(tracked_files['addrepl_index'], link=Link.OUTPUT, transfer=True)
+    j.uses(tracked_files['addrepl_reads'], link=Link.OUTPUT, transfer=False)
+    j.uses(tracked_files['addrepl_index'], link=Link.OUTPUT, transfer=False)
     
     j.addArguments("AddOrReplaceReadGroups.jar",
                    "MAX_RECORDS_IN_RAM=5000000",
@@ -637,9 +638,9 @@ def haplotype_caller(sample_name, dax, software_file, ref_files, tracked_files,
     # outputs
     fname = conf.get("local", "run_id") + "-" + sample_name + "_" + chromosome + ".vcf"
     tracked_files[fname] = File(fname)
-    j.uses(tracked_files[fname], link=Link.OUTPUT, transfer=False)
+    j.uses(tracked_files[fname], link=Link.OUTPUT, transfer=True)
     tracked_files[fname + ".idx"] = File(fname + ".idx")
-    j.uses(tracked_files[fname + ".idx"], link=Link.OUTPUT, transfer=False)
+    j.uses(tracked_files[fname + ".idx"], link=Link.OUTPUT, transfer=True)
     
     j.addArguments("-T", "HaplotypeCaller",
                    "--emitRefConfidence", "GVCF",
@@ -761,6 +762,7 @@ def combine_variants(dax, software_file, chromosomes, ref_files, tracked_files):
     j.uses(tracked_files[fname + ".idx"], link=Link.OUTPUT, transfer=True)
     
     j.addArguments("-T", "CombineVariants",
+                   "--genotypemergeoption", "UNSORTED",
                    "-R", extract_fasta_basefile(ref_files),
                    "-o", tracked_files[fname])
     for chr in chromosomes:
@@ -896,7 +898,7 @@ def generate_dax():
         sample_names.append(sample_name)
 
     # combine all haplotype_caller outputs into one merged file for output
-    merge_gvcf(dax, software_tar, chromosomes, ref_files, tracked_files, sample_names)
+    #merge_gvcf(dax, software_tar, chromosomes, ref_files, tracked_files, sample_names)
     
     # run genotype_gvcfs per chromosome
     for chr in chromosomes:
@@ -983,7 +985,7 @@ def main():
     # download the  software tarball
     logger.info("Downloading the software tarball")
     myexec("wget -nv -O " + conf.get("local", "work_dir") + "/software.tar.gz" + \
-           " http://www.isi.edu/~rynge/PGen-GenomicVariations-Workflow/software-1.0.tar.gz")
+            " http://de.iplantcollaborative.org/dl/d/38512C4A-476F-4A74-A928-C9415D0F5CF4/software.tar.gz")
 
     generate_site_catalog()
 
