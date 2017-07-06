@@ -25,6 +25,10 @@ elif (echo "'$@'" | grep -i "CombineGVCFs") >/dev/null; then
 fi
 OPTIONS="-Djava.io.tmpdir=$TMPDIR $OPTIONS"
 
+echo
+echo "Java used is" `which java`
+echo
+
 java $OPTIONS \
      -jar ./software/GenomeAnalysisTK-3.0.0/GenomeAnalysisTK.jar \
      "$@" \
