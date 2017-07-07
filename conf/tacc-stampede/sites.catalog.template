@@ -18,9 +18,9 @@
         </directory>
         <profile namespace="pegasus" key="job.aggregator">mpiexec</profile>
         <profile namespace="env" key="PEGASUS_HOME">/home1/00384/rynge/software/pegasus/4.4.0cvs</profile>
-        <profile namespace="env" key="PATH">/home1/00384/rynge/software/pegasus/4.4.0cvs/bin:/scratch/projects/xsede/jdk64/jdk1.8.0_45/bin:/home1/00384/rynge/software/irods/3.2/bin:/scratch/projects/xsede/globus-5.0.4-r1/bin:/usr/bin:/bin</profile>
+        <profile namespace="env" key="PATH">/home1/00384/rynge/software/pegasus/4.4.0cvs/bin:/scratch/projects/xsede/jdk64/jdk1.8.0_25/bin:/home1/00384/rynge/software/irods/3.2/bin:/scratch/projects/xsede/globus-5.0.4-r1/bin:/usr/bin:/bin</profile>
         <profile namespace="env" key="LD_LIBRARY_PATH">/scratch/projects/xsede/globus-5.0.4-r1/lib</profile>
-        <profile namespace="env" key="JAVA_HOME">/scratch/projects/xsede/jdk64/jdk1.8.0_45</profile>
+        <profile namespace="env" key="JAVA_HOME">/scratch/projects/xsede/jdk64/jdk1.8.0_25</profile>
         <profile namespace="env" key="TMPDIR_OVERRIDE">/tmp</profile>
         <profile namespace="globus" key="project">$tacc_allocation</profile>
     </site>

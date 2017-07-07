@@ -27,6 +27,10 @@ OPTIONS="-Djava.io.tmpdir=$TMPDIR $OPTIONS"
 
 echo
 echo "Java used is" `which java`
+ls -l /scratch/projects/xsede/jdk64/jdk1.8.0_25/bin/java
+/scratch/projects/xsede/jdk64/jdk1.8.0_25/bin/java -version || /bin/true
+module load jdk64/1.8.0 || /bin/true
+which java
 echo
 
 java $OPTIONS \
