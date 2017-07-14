@@ -16,5 +16,11 @@ if [ ! -e "$TMPDIR" ]; then
     mkdir -p $TMPDIR
 fi
 
+# TACC Hack
+export PATH=/scratch/projects/xsede/jdk64/jdk1.8.0_25/bin:$PATH
+echo
+echo "Java used is" `which java`
+echo
+
 java -Djava.io.tmpdir=$TMPDIR -Xmx17g -XX:+UseSerialGC -jar ./software/picard-tools-1.92/"$@"
 

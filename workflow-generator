@@ -244,6 +244,12 @@ def extract_sample_name(url):
     return name
 
 
+def escape_filename(fn):
+    """ escapes shell characters in filenames """
+    fn = re.sub(r'[\*\? \t]', "__", fn)
+    return fn
+
+
 def add_executable(dax, logical_name, wrapper_name):
     """ adds executables to the DAX-level replica catalog """
     global added_execs
@@ -636,7 +642,8 @@ def haplotype_caller(sample_name, dax, software_file, ref_files, tracked_files,
     j.uses(tracked_files['indel_realigned_index'], link=Link.INPUT)
 
     # outputs
-    fname = conf.get("local", "run_id") + "-" + sample_name + "_" + chromosome + ".vcf"
+    fname = conf.get("local", "run_id") + "-" + sample_name + "_" + \
+            escape_filename(chromosome) + ".vcf"
     tracked_files[fname] = File(fname)
     j.uses(tracked_files[fname], link=Link.OUTPUT, transfer=True)
     tracked_files[fname + ".idx"] = File(fname + ".idx")
@@ -646,7 +653,7 @@ def haplotype_caller(sample_name, dax, software_file, ref_files, tracked_files,
                    "--emitRefConfidence", "GVCF",
                    "--variant_index_type", "LINEAR",
                    "--variant_index_parameter", "128000",
-                   "-L", chromosome,
+                   "-L", "'" + chromosome + "'",
                    "-R", extract_fasta_basefile(ref_files),
                    "-I", tracked_files['indel_realigned_reads'],
                    "-o", tracked_files[fname])
@@ -716,14 +723,16 @@ def genotype_gvcfs(dax, software_file, ref_files, tracked_files, sample_names,
     for f in ref_files:
         j.uses(f, link=Link.INPUT)
     for sname in sample_names:
-        fname = conf.get("local", "run_id") + "-" + sname + "_" + chromosome + ".vcf"
+        fname = conf.get("local", "run_id") + "-" + sname + "_" + \
+                escape_filename(chromosome) + ".vcf"
         f = tracked_files[fname]
         j.uses(f, link=Link.INPUT)
         j.uses(tracked_files[fname + ".idx"], link=Link.INPUT)
         variant_files.append(f)
 
     # outputs
-    fname = conf.get("local", "run_id") + "-" + "GVCF_" + chromosome + ".vcf"
+    fname = conf.get("local", "run_id") + "-" + "GVCF_" + \
+            escape_filename(chromosome) + ".vcf"
     tracked_files[fname] = File(fname)
     j.uses(tracked_files[fname], link=Link.OUTPUT, transfer=False)
     tracked_files[fname + ".idx"] = File(fname + ".idx")
@@ -750,7 +759,7 @@ def combine_variants(dax, software_file, chromosomes, ref_files, tracked_files):
     for f in ref_files:
         j.uses(f, link=Link.INPUT)
     for chr in chromosomes:
-        fname = conf.get("local", "run_id") + "-" + "GVCF_%s.vcf" % (chr)
+        fname = conf.get("local", "run_id") + "-" + "GVCF_%s.vcf" % (escape_filename(chr))
         j.uses(tracked_files[fname], link=Link.INPUT)
         j.uses(tracked_files[fname + ".idx"], link=Link.INPUT)
 
@@ -766,7 +775,7 @@ def combine_variants(dax, software_file, chromosomes, ref_files, tracked_files):
                    "-R", extract_fasta_basefile(ref_files),
                    "-o", tracked_files[fname])
     for chr in chromosomes:
-        fname = conf.get("local", "run_id") + "-" + "GVCF_%s.vcf" % (chr)
+        fname = conf.get("local", "run_id") + "-" + "GVCF_%s.vcf" % (escape_filename(chr))
         j.addArguments("--variant", tracked_files[fname])
     
     dax.addJob(j)
