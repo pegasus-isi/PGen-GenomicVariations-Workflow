@@ -393,6 +393,23 @@ def alignment_to_reference(sample_name, dax, software_tar, chromosomes, ref_file
     dax.addJob(j)
 
     # next step    
+    fixmate_job = fix_mate(sample_name, dax, software_tar, chromosomes, ref_files, tracked_files)
+    
+    return j
+
+
+def fix_mate(sample_name, dax, software_tar, chromosomes, ref_files, tracked_files):
+
+    add_executable(dax, "fix_mate", "samtools-wrapper")
+    j = ComputeJob("fix_mate", cores = 1, mem_gb = 4, partition = "part1")
+    j.uses(software_tar, link=Link.INPUT)
+    j.uses(tracked_files['sam'], link=Link.INPUT)
+    j.uses(tracked_files['fixed_mates'], link=Link.OUTPUT, transfer=False)
+    
+    j.addArguments("fixmate", tracked_files['sam'], tracked_files['fixed_mates'])
+    dax.addJob(j)
+
+    # next step    
     sortsam_job = sort_sam(sample_name, dax, software_tar, chromosomes, ref_files, tracked_files)
     
     return j
@@ -404,14 +421,14 @@ def sort_sam(sample_name, dax, software_tar, chromosomes, ref_files, tracked_fil
     j = ComputeJob("sort_sam", cores = 1, mem_gb = 21, 
                    partition = "part1")
     j.uses(software_tar, link=Link.INPUT)
-    j.uses(tracked_files['sam'], link=Link.INPUT)
+    j.uses(tracked_files['fixed_mates'], link=Link.INPUT)
     j.uses(tracked_files['sorted_reads'], link=Link.OUTPUT, transfer=False)
     j.uses(tracked_files['sorted_index'], link=Link.OUTPUT, transfer=False)
     
     j.addArguments("SortSam.jar",
                    "CREATE_INDEX=TRUE",
                    "MAX_RECORDS_IN_RAM=5000000",
-                   "I=" + tracked_files['sam'].name,
+                   "I=" + tracked_files['fixed_mates'].name,
                    "O=" + tracked_files['sorted_reads'].name,
                    "SO=coordinate",
                    "VALIDATION_STRINGENCY=LENIENT")
@@ -883,6 +900,7 @@ def generate_dax():
 
         # files we need to track
         tracked_files['sam'] = File(conf.get("local", "run_id") + "-" + sample_name + "_aligned_reads.sam")
+        tracked_files['fixed_mates'] = File(conf.get("local", "run_id") + "-" + sample_name + "_fixed_mates.sam")
         tracked_files['sorted_reads'] = File(conf.get("local", "run_id") + "-" + sample_name + "_sorted_reads.bam")
         tracked_files['sorted_index'] = File(conf.get("local", "run_id") + "-" + sample_name + "_sorted_reads.bai")
         tracked_files['deduped_reads'] = File(conf.get("local", "run_id") + "-" + sample_name + "_deduped_reads.bam")
@@ -994,7 +1012,7 @@ def main():
     # download the  software tarball
     logger.info("Downloading the software tarball")
     myexec("wget -nv -O " + conf.get("local", "work_dir") + "/software.tar.gz" + \
-            " http://de.iplantcollaborative.org/dl/d/38512C4A-476F-4A74-A928-C9415D0F5CF4/software.tar.gz")
+            " http://workflow.isi.edu/scratch/rynge/pgen/software.tar.gz")
 
     generate_site_catalog()
 
